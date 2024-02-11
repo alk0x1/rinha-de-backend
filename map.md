@@ -7,7 +7,7 @@
     "valor": 1000,
     "tipo" : "c",
     "descricao" : "descricao"
-}
+}****
 ```
 
 - **[id]** (na URL) deve ser um número inteiro representando a identificação do cliente.
@@ -52,3 +52,12 @@
   ]
 }
 ```
+- **saldo**
+  - **total** deve ser o saldo total atual do cliente (não apenas das últimas transações seguintes exibidas).
+  - **data_extrato** deve ser a data/hora da consulta do extrato.
+limite deve ser o limite cadastrado do cliente.
+- **ultimas_transacoes** é uma lista ordenada por data/hora das transações de forma decrescente contendo até as 10 últimas transações com o seguinte:
+  - **valor** deve ser o valor da transação.
+  - **tipo** deve ser c para crédito e d para débito.
+  - **descricao** deve ser a descrição informada durante a transação.
+  - **realizada_em** deve ser a data/hora da realização da transação.
