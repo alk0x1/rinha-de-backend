@@ -23,13 +23,12 @@ pub async fn create_transaction(pool: web::Data<Pool>, payload: web::Json<Transa
 
   Ok(HttpResponse::Created().finish())
 }
+
 #[get("/clientes/{id}/extrato")]
 pub async fn get_extrato(pool: web::Data<Pool>, path: web::Path<(i32,)>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
-  println!("teste1");
-  
   let client_id = path.into_inner().0;
-  let saldo = services::get_saldo(&pool.get().await?, client_id).await?;
-  let last_transactions = services::get_last_transactions(&pool.get().await?, client_id).await?;
+  let saldo = services::get_saldo(&pool.get().await.expect("error on getting the pool"), client_id).await.expect("error on getting the balance");
+  let last_transactions = services::get_last_transactions(&pool.get().await.expect("error on getting pool"), client_id).await.expect("Failed to get last transactions");
   
   let extrato = Extrato {
     saldo,

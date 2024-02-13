@@ -13,7 +13,7 @@ pub struct Transaction {
 pub struct Saldo {
   pub total: i32,
   pub data_extrato: String,
-  pub limite: i32
+  pub limite: i32,
 }
 
 #[derive(Serialize, Deserialize)]
