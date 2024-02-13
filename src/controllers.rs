@@ -1,7 +1,7 @@
 use actix_web::{get, post, web, HttpResponse, Responder};
 use deadpool_postgres::Pool;
 use crate::services;
-use crate::dto::Transaction;
+use crate::model::{Extrato, Transaction};
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -9,16 +9,34 @@ async fn hello() -> impl Responder {
 }
 
 #[post("/clientes/{id}/transacoes")]
-pub async fn create_transaction(pool: web::Data<Pool>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
+pub async fn create_transaction(pool: web::Data<Pool>, payload: web::Json<Transaction>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
+  
   let transaction = Transaction {
-    id: 0,
-    client_id: 0,
-    valor: 0,
-    descricao: String::from("teste"),
-    tipo: 'c'
+    client_id: payload.client_id,
+    valor: payload.valor,
+    descricao: payload.descricao.clone(),
+    tipo: payload.tipo,
+    realizada_em: payload.realizada_em.clone()
   };
 
   services::insert_transaction(&pool.get().await?, transaction).await?;
 
-  Ok(HttpResponse::Created()
-  .finish())}
+  Ok(HttpResponse::Created().finish())
+}
+#[get("/clientes/{id}/extrato")]
+pub async fn get_extrato(pool: web::Data<Pool>, path: web::Path<(i32,)>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
+  println!("teste1");
+  
+  let client_id = path.into_inner().0;
+  let saldo = services::get_saldo(&pool.get().await?, client_id).await?;
+  let last_transactions = services::get_last_transactions(&pool.get().await?, client_id).await?;
+  
+  let extrato = Extrato {
+    saldo,
+    last_transactions
+  };
+
+  let json = serde_json::to_string(&extrato)?;
+
+  Ok(HttpResponse::Ok().body(json))
+}

@@ -3,7 +3,7 @@ use deadpool_postgres::{Config, Pool, Runtime};
 use tokio_postgres::NoTls;
 use std::env;
 mod controllers;
-mod dto;
+mod model;
 mod services;
 
 
@@ -17,13 +17,13 @@ async fn main() -> std::io::Result<()> {
 
 
   let pool: Pool = cfg.create_pool(Some(Runtime::Tokio1), NoTls).unwrap();
-  let conn = pool.get().await.expect("Failed to get a DB connection from the pool");
 
   HttpServer::new(move || {
     App::new()
       .app_data(web::Data::new(pool.clone()))
       .service(controllers::hello)
       .service(controllers::create_transaction)
+      .service(controllers::get_extrato)
   })
   .bind(("127.0.0.1", 8080))?
   .run()
