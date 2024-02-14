@@ -1,11 +1,11 @@
-use crate::model::{Saldo, Transaction};
+use crate::model::{CreateTransactionDTO, Saldo, Transaction};
 use tokio_postgres::Error;
 use actix_web::HttpResponse;
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
 use std::time::SystemTime;
 
-pub async fn insert_transaction(conn: &deadpool_postgres::Client, transaction: Transaction) -> Result<HttpResponse, Error> {
+pub async fn insert_transaction(conn: &deadpool_postgres::Client, transaction: CreateTransactionDTO) -> Result<HttpResponse, Error> {
   let stmt = conn.prepare("INSERT INTO transactions (id, client_id, valor, tipo, descricao) VALUES ($1, $2, $3, $4, $5)").await?;
 
   let id = Uuid::new_v4().to_string();

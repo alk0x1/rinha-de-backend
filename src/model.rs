@@ -8,6 +8,13 @@ pub struct Transaction {
   pub descricao: String,
   pub realizada_em: String
 }
+#[derive(Serialize, Deserialize)]
+pub struct CreateTransactionDTO {
+  pub client_id: i32,
+  pub valor: i32,
+  pub tipo: char,
+  pub descricao: String,
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct Saldo {

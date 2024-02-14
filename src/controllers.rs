@@ -1,7 +1,7 @@
 use actix_web::{get, post, web, HttpResponse, Responder};
 use deadpool_postgres::Pool;
 use crate::services;
-use crate::model::{Extrato, Transaction};
+use crate::model::{CreateTransactionDTO, Extrato};
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -9,14 +9,13 @@ async fn hello() -> impl Responder {
 }
 
 #[post("/clientes/{id}/transacoes")]
-pub async fn create_transaction(pool: web::Data<Pool>, payload: web::Json<Transaction>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
+pub async fn create_transaction(pool: web::Data<Pool>, payload: web::Json<CreateTransactionDTO>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
   
-  let transaction = Transaction {
+  let transaction = CreateTransactionDTO {
     client_id: payload.client_id,
     valor: payload.valor,
     descricao: payload.descricao.clone(),
     tipo: payload.tipo,
-    realizada_em: payload.realizada_em.clone()
   };
 
   services::insert_transaction(&pool.get().await?, transaction).await?;
