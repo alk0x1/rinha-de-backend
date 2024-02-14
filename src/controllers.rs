@@ -18,7 +18,13 @@ pub async fn create_transaction(pool: web::Data<Pool>, payload: web::Json<Create
     tipo: payload.tipo,
   };
 
-  services::insert_transaction(&pool.get().await?, transaction).await?;
+  if payload.tipo == 'd' {
+    let saldo = services::get_saldo(&pool.get().await?, payload.client_id).await?;
+    if saldo.total - transaction.valor >= saldo.limite {
+      services::insert_transaction(&pool.get().await?, transaction).await?;
+    }
+  }
+
 
   Ok(HttpResponse::Created().finish())
 }
